@@ -1,22 +1,22 @@
 <div align="center">
 
-# <a href="https://t.me/igorosdev"><img src="https://cdn-icons-png.flaticon.com/128/15059/15059934.png" height=28 /></a> <a href="https://github.com/Igoreeek228/">Igoreeek228</a><a href="https://github.com/Igoreeek228/igorOS">/IgorOS</a> <a href="https://github.com/Igoreeek228/igorOS/releases/latest/"><img src="https://cdn-icons-png.flaticon.com/128/2504/2504911.png" height=28 /></a>
+# <a href="https://t.me/igorosdev"><img src="https://cdn-icons-png.flaticon.com/128/15059/15059934.png" height=28 /></a> <a href="https://github.com/Igoreeek228/">Igoreeek228</a><a href="https://github.com/Igoreeek228/ByteOS">/ByteOS</a> <a href="https://github.com/Igoreeek228/ByteOS/releases/latest/"><img src="https://cdn-icons-png.flaticon.com/128/2504/2504911.png" height=28 /></a>
 
 </div>
 
-![Alt text](https://github.com/Igoreeek228/igorOS/blob/Main/updatestg.jpg)
+![Alt text](https://github.com/Igoreeek228/ByteOS/blob/Main/updatestg.jpg)
 
 <div align="center">
 
   <h1>
     <img src="https://cdn-icons-png.flaticon.com/128/7231/7231149.png" width="30" valign="middle" />
-    Contributors of IgorOS
+    Contributors of ByteOS
     <img src="https://cdn-icons-png.flaticon.com/128/3308/3308315.png" width="30" valign="middle" />
   </h1>
 
   <p>
-    <a href="https://github.com/Igoreeek228/igorOS/graphs/contributors">
-      <img src="https://img.shields.io/github/contributors/Igoreeek228/igorOS?style=for-the-badge&color=007acc&logo=github" alt="Contributors" />
+    <a href="https://github.com/Igoreeek228/ByteOS/graphs/contributors">
+      <img src="https://img.shields.io/github/contributors/Igoreeek228/ByteOS?style=for-the-badge&color=007acc&logo=github" alt="Contributors" />
     </a>
     <a href="https://t.me/jundevx">
       <img src="https://img.shields.io/badge/Telegram-JunDevX-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" />
@@ -27,7 +27,7 @@
 
 <div align="center">
   <h3>📷 Скриншоты / Интерфейс</h3>
-  <img src="https://github.com/Igoreeek228/igorOS/blob/Main/gh_page/photo1.png" alt="IgorOS Screenshot" width="80%" />
+  <img src="https://github.com/Igoreeek228/ByteOS/blob/Main/gh_page/photo1.png" alt="ByteOS Screenshot" width="80%" />
 </div>
 
 ## 🌟 Ключевые возможности
@@ -54,7 +54,7 @@
     <td width="50%" align="center">
       <img src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" width="48" height="48" /><br/>
       <b>Простая интеграция</b><br/>
-      <sub>Легко встраивается в структуру igorOS и работает из коробки</sub>
+      <sub>Легко встраивается в структуру ByteOS и работает из коробки</sub>
     </td>
   </tr>
 </table>

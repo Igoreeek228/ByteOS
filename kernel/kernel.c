@@ -4,8 +4,12 @@
 #include "limine.h"
 #include "include/idt.h"
 #include "timer.h"
+#include "gdt.h"
+#include "pmm.h"
+#include "kheap.h"
 #include "../boot/loading/load_logo.h"
 #include "../src/gui/font.h"
+#include "../src/drivers/system/sound_manager.h"
 
 __attribute__((used, section(".requests")))
 static volatile uint64_t limine_base_revision[3] = {
@@ -17,6 +21,18 @@ static volatile uint64_t limine_base_revision[3] = {
 __attribute__((used, section(".requests")))
 static volatile struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
+    .revision = 0
+};
+
+__attribute__((used, section(".requests")))
+static volatile struct limine_hhdm_request hhdm_request = {
+    .id = LIMINE_HHDM_REQUEST,
+    .revision = 0
+};
+
+__attribute__((used, section(".requests")))
+static volatile struct limine_memmap_request memmap_request = {
+    .id = LIMINE_MEMMAP_REQUEST,
     .revision = 0
 };
 
@@ -359,21 +375,25 @@ static void draw_boot_progress(int percent, const char* label) {
 void kernel_main(void) {
     enable_sse();
 
-    /*
-     * НАСТОЯЩИЙ БАГ, из-за которого курсор не двигался вообще:
-     * idt_init() (kernel/include/idt.c) нигде не вызывался. IDT никогда
-     * не загружалась (lidt не выполнялся), и инструкция sti (разрешение
-     * аппаратных прерываний) внутри idt_init() соответственно тоже
-     * никогда не выполнялась. PS/2-мышь (drivers/system/mouse.c) корректно
-     * настраивалась и слала пакеты по IRQ12, но CPU в принципе не мог их
-     * обработать -- прерывания были глобально выключены с самого старта
-     * ядра. Двойной вызов init_mouse(), который чинили раньше, был
-     * реальной, но вторичной проблемой: даже без него курсор не мог
-     * двигаться, пока не появился этот вызов idt_init().
-     * Вызывается максимально рано, до любой другой инициализации.
-     */
+    /* Initialize our 64-bit GDT with TSS & dedicated Double Fault stack */
+    gdt_init();
+
+    /* Initialize IDT and exception/IRQ handlers */
     idt_init();
     timer_init(250);
+
+    /* Initialize Physical Memory Manager & Kernel Heap */
+    uint64_t hhdm = 0;
+    if (hhdm_request.response) {
+        hhdm = hhdm_request.response->offset;
+    }
+    if (memmap_request.response) {
+        pmm_init(memmap_request.response, hhdm);
+        kheap_init();
+    }
+
+    /* Initialize sound devices (HDA / AC97) */
+    sound_init();
     
     serial_print("[1/6] Checking Limine framebuffer...\n");
     if (framebuffer_request.response == NULL || framebuffer_request.response->framebuffer_count < 1) {
@@ -425,7 +445,7 @@ void kernel_main(void) {
         "Checking hardware...",
         "Initializing input devices...",
         "Preparing interface...",
-        "Starting igorOS..."
+        "Starting ByteOS..."
     };
 
     int spin_frame = 0;

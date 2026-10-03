@@ -68,7 +68,7 @@ void idt_set_descriptor(uint8_t vector, void *isr, uint8_t flags) {
      * попасть в mouse_irq_handler(), потому что сама интерпретация
      * IDT-дескриптора была сломана на уровне сегмента кода.
      */
-    descriptor->kernel_cs  = 0x28;
+    descriptor->kernel_cs  = 0x08;
     descriptor->ist        = 0;
     descriptor->attributes = flags;
     descriptor->isr_mid    = (addr >> 16) & 0xFFFF;
@@ -87,6 +87,8 @@ static void idt_install_exception_handlers(void) {
     for (int i = 0; i < 32; i++) {
         idt_set_descriptor((uint8_t)i, stubs[i], 0x8E);
     }
+    /* Vector 8: Double fault uses IST1 (dedicated stack in TSS) */
+    idt[8].ist = 1;
 }
 
 static void idt_install_irq_handlers(void) {

@@ -141,12 +141,13 @@ void mouse_handle_byte(uint8_t data) {
                 (mouse_packet[0] & 0x04) != 0;
 
             /*
-             * В PS/2 delta — знаковое 8-битное число.
-             * Не используем деление на 2: оно делает скорость
-             * неравномерной и особенно плохо работает на маленьких delta.
+             * В PS/2 delta — 9-битное знаковое число, старшие знаковые биты лежат
+             * в байте 0 (бит 4 для X, бит 5 для Y).
              */
-            int32_t rel_x = (int32_t)(int8_t)mouse_packet[1];
-            int32_t rel_y = (int32_t)(int8_t)mouse_packet[2];
+            int32_t rel_x = (int32_t)(uint32_t)mouse_packet[1];
+            int32_t rel_y = (int32_t)(uint32_t)mouse_packet[2];
+            if (mouse_packet[0] & 0x10) rel_x |= (int32_t)0xFFFFFF00;
+            if (mouse_packet[0] & 0x20) rel_y |= (int32_t)0xFFFFFF00;
 
             /*
              * Ограничиваем один пакет.

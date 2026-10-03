@@ -240,30 +240,9 @@ void render_calc_app_window(
         mx >= (zoom_x - hit_padding) && mx <= (zoom_x + tl_size + hit_padding) &&
         my >= (tl_y - hit_padding) && my <= (tl_y + tl_size + hit_padding);
 
-    /* ======================================
-       Window shadow -- мягче и шире, как в Big Sur
-       ====================================== */
-
-    static const struct { int spread; int drop; uint8_t alpha; } shadows[] = {
-        {14, 18, 8},
-        {11, 15, 12},
-        {8,  12, 16},
-        {5,   9, 22},
-        {2,   6, 30},
-    };
-
-    for (unsigned i = 0; i < sizeof(shadows) / sizeof(shadows[0]); i++) {
-        int sp = shadows[i].spread;
-        draw_rounded_rect_alpha(
-            draw_x - sp / 2,
-            draw_y - sp / 2 + shadows[i].drop,
-            draw_w + sp,
-            draw_h + sp,
-            18 + sp / 2,
-            0x00000000,
-            shadows[i].alpha
-        );
-    }
+    /* Fast, clean 2-pass soft drop shadow */
+    draw_rounded_rect_alpha(draw_x - 6, draw_y - 2 + 8, draw_w + 12, draw_h + 10, 22, 0x00000000, 24);
+    draw_rounded_rect_alpha(draw_x - 2, draw_y + 3,     draw_w + 4,  draw_h + 4,  19, 0x00000000, 42);
 
     /* ======================================
        Main window body -- тёмная панель, как системный калькулятор

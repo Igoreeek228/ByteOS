@@ -3,36 +3,23 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-/* ---- heap ---- */
-#define HEAP_SIZE (12 * 1024 * 1024)
-static uint8_t heap[HEAP_SIZE];
-static size_t heap_ptr = 0;
+#include "kheap.h"
 
+/* ---- heap backed by real kernel heap allocator ---- */
 void *malloc(size_t n) {
-    n = (n + 15) & ~(size_t)15;
-    if (heap_ptr + n > HEAP_SIZE) return 0;
-    void *p = &heap[heap_ptr];
-    heap_ptr += n;
-    return p;
+    return kmalloc(n);
 }
-void free(void *p) { (void)p; }
+
+void free(void *p) {
+    kfree(p);
+}
+
 void *calloc(size_t a, size_t b) {
-    size_t n = a * b;
-    void *p = malloc(n);
-    if (p) {
-        uint8_t *q = p;
-        for (size_t i = 0; i < n; i++) q[i] = 0;
-    }
-    return p;
+    return kcalloc(a, b);
 }
+
 void *realloc(void *p, size_t n) {
-    void *q = malloc(n);
-    if (q && p) {
-        /* best-effort copy unknown size — callers rarely need exact */
-        uint8_t *d = q, *s = p;
-        for (size_t i = 0; i < n; i++) d[i] = s[i];
-    }
-    return q;
+    return krealloc(p, n);
 }
 
 /* ---- string / mem ---- */
@@ -80,6 +67,19 @@ char *strrchr(const char *s, int c) {
     while (*s) { if (*s == (char)c) l = s; s++; }
     return (char *)l;
 }
+char *strstr(const char *haystack, const char *needle) {
+    if (!*needle) return (char *)haystack;
+    for (; *haystack; haystack++) {
+        if (*haystack == *needle) {
+            const char *h = haystack, *n = needle;
+            while (*h && *n && *h == *n) { h++; n++; }
+            if (!*n) return (char *)haystack;
+        }
+    }
+    return 0;
+}
+int errno = 0;
+int mkdir(const char *path, ...) { (void)path; return 0; }
 int toupper(int c) { return (c >= 'a' && c <= 'z') ? c - 32 : c; }
 int tolower(int c) { return (c >= 'A' && c <= 'Z') ? c + 32 : c; }
 int abs(int x) { return x < 0 ? -x : x; }

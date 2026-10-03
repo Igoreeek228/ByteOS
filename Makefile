@@ -1,5 +1,5 @@
 # ==========================================
-# IgorOS Makefile — real Doom (doomgeneric + DOOM.WAD)
+# ByteOS Makefile — real Doom (doomgeneric + DOOM.WAD)
 # ==========================================
 
 CC = gcc
@@ -9,7 +9,7 @@ NASM = nasm
 CFLAGS = -m64 -ffreestanding -fno-stack-protector -fno-pie -mno-red-zone \
          -mcmodel=kernel -O2 -Wall -Wextra -Wno-unused -Wno-maybe-uninitialized \
          -Isrc/gui/apps/doom/fs_include \
-         -Iinclude -Ikernel -Isrc -Ikernel/include \
+         -I. -Iinclude -Ikernel -Isrc -Ikernel/include \
          -Isrc/gui/apps/doom -Isrc/gui/apps/doom/engine \
          -DDOOMGENERIC_RESX=320 -DDOOMGENERIC_RESY=200
 
@@ -42,6 +42,9 @@ DOOM_ENGINE_SRCS = \
 
 OBJS = \
     build/kernel/kernel.o \
+    build/kernel/gdt.o \
+    build/kernel/pmm.o \
+    build/kernel/kheap.o \
     build/kernel/graphics.o \
     build/kernel/idt.o \
     build/kernel/pic.o \
@@ -129,9 +132,9 @@ build/kernel.elf: $(OBJS)
 # ISO
 # ==========================================
 
-iso: build/igorOS.iso
+iso: build/byteOS.iso
 
-build/igorOS.iso: build/kernel.elf boot/limine/limine.conf boot/limine/limine.cfg
+build/byteOS.iso: build/kernel.elf boot/limine/limine.conf boot/limine/limine.cfg
 	@echo "==> Создание структуры ISO..."
 	rm -rf ready
 	mkdir -p ready/boot/limine
@@ -158,16 +161,18 @@ build/igorOS.iso: build/kernel.elf boot/limine/limine.conf boot/limine/limine.cf
 		--efi-boot-image \
 		--eltorito-alt-boot \
 		ready \
-		-o build/igorOS.iso
-	./boot/limine/limine bios-install build/igorOS.iso
+		-o build/byteOS.iso
+	chmod +x boot/limine/limine 2>/dev/null || true
+	./boot/limine/limine bios-install build/byteOS.iso
+	@cp -f build/byteOS.iso build/igorOS.iso 2>/dev/null || true
 
 # ==========================================
 # IMG
 # ==========================================
 
-img: build/igorOS.img
+img: build/byteOS.img
 
-build/igorOS.img: build/kernel.elf boot/limine/limine.conf boot/limine/limine.cfg boot/limine/BOOTX64.EFI
+build/byteOS.img: build/kernel.elf boot/limine/limine.conf boot/limine/limine.cfg boot/limine/BOOTX64.EFI
 	@echo "==> Создание IMG..."
 	dd if=/dev/zero of=$@ bs=1M count=128 status=none
 	parted -s $@ mklabel msdos
@@ -188,7 +193,9 @@ build/igorOS.img: build/kernel.elf boot/limine/limine.conf boot/limine/limine.cf
 	mcopy -o -i $@@@1M boot/limine/limine.cfg ::/EFI/BOOT/limine.cfg
 	mcopy -o -i $@@@1M boot/limine/limine-bios.sys ::/boot/limine/limine-bios.sys
 	mcopy -o -i $@@@1M boot/limine/BOOTX64.EFI ::/EFI/BOOT/BOOTX64.EFI
+	chmod +x boot/limine/limine 2>/dev/null || true
 	./boot/limine/limine bios-install $@
+	@cp -f build/byteOS.img build/igorOS.img 2>/dev/null || true
 
 # ==========================================
 # QEMU
@@ -196,18 +203,18 @@ build/igorOS.img: build/kernel.elf boot/limine/limine.conf boot/limine/limine.cf
 
 run: run-iso
 
-run-iso: build/igorOS.iso
+run-iso: build/byteOS.iso
 	qemu-system-x86_64 \
-		-cdrom build/igorOS.iso \
+		-cdrom build/byteOS.iso \
 		-m 2048 \
 		-vga std \
 		-serial stdio \
 		-no-shutdown \
 		-no-reboot
 
-run-img: build/igorOS.img
+run-img: build/byteOS.img
 	qemu-system-x86_64 \
-		-hda build/igorOS.img \
+		-hda build/byteOS.img \
 		-m 2048 \
 		-vga std \
 		-serial stdio \

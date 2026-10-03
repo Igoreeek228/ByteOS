@@ -1757,6 +1757,10 @@ static unsigned char char_advance(unsigned char code) {
 }
 
 void draw_char(char c, int x, int y, uint32_t color, uint32_t* buf, uint32_t buf_width) {
+    if (!buf || buf_width == 0) return;
+    if (x + FONT_CHAR_W <= 0 || x >= (int)buf_width) return;
+    if (y + FONT_CHAR_H <= 0) return;
+
     unsigned char code = (unsigned char)c;
     if (code < FONT_FIRST_CHAR || code > FONT_LAST_CHAR) {
         code = '?';
@@ -1764,11 +1768,17 @@ void draw_char(char c, int x, int y, uint32_t color, uint32_t* buf, uint32_t buf
     const unsigned char (*glyph)[FONT_CHAR_W] = font[code - FONT_FIRST_CHAR];
 
     for (int row = 0; row < FONT_CHAR_H; row++) {
+        int py = y + row;
+        if (py < 0) continue;
+
         for (int col = 0; col < FONT_CHAR_W; col++) {
+            int px = x + col;
+            if (px < 0 || px >= (int)buf_width) continue;
+
             unsigned char alpha = glyph[row][col];
             if (alpha == 0) continue;
 
-            uint32_t* dst = &buf[(y + row) * buf_width + (x + col)];
+            uint32_t* dst = &buf[(uint32_t)py * buf_width + (uint32_t)px];
             *dst = blend_pixel(*dst, color, alpha);
         }
     }

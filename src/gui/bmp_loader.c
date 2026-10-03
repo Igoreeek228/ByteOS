@@ -59,11 +59,6 @@ void draw_bmp_stretched(const uint8_t* bmp_data, int dst_w, int dst_h, uint32_t*
             // Полностью прозрачный пиксель пропускаем
             if (a == 0) continue;
 
-            // Color Keying для 24-битного BMP (пропуск чисто черного цвета)
-            if (bytes_per_pixel == 3 && r == 0 && g == 0 && b == 0) {
-                continue;
-            }
-
             int dst_idx = dy * dst_w + dx;
 
             if (a == 255) {

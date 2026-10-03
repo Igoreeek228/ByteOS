@@ -60,7 +60,7 @@ static void populate_dir_from_disk(vfs_node_t* dir) {
     }
 }
 
-static const char text_data[] = "Hello from igorOS!\nRAMFS file reader working.";
+static const char text_data[] = "Hello from ByteOS!\nRAMFS file reader working.";
 
 static void format_size(uint32_t bytes, char* out) {
     int i = 0;

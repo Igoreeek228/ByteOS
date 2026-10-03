@@ -12,5 +12,7 @@ typedef enum {
 void sound_init(void);
 void sound_set_volume(uint8_t vol);
 void sound_play_pcm(const uint16_t* samples, uint32_t count);
+audio_dev_t sound_get_active_dev(void);
+const char* sound_get_device_name(void);
 
 #endif

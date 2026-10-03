@@ -146,16 +146,9 @@ void render_settings_app_window(
         mx >= (zoom_x - hit_padding) && mx <= (zoom_x + tl_size + hit_padding) &&
         my >= (tl_y - hit_padding) && my <= (tl_y + tl_size + hit_padding);
 
-    static const struct { int spread; int drop; uint8_t alpha; } shadows[] = {
-        {14, 18, 8}, {11, 15, 12}, {8, 12, 16}, {5, 9, 22}, {2, 6, 30},
-    };
-    for (unsigned i = 0; i < sizeof(shadows) / sizeof(shadows[0]); i++) {
-        int sp = shadows[i].spread;
-        draw_rounded_rect_alpha(
-            draw_x - sp / 2, draw_y - sp / 2 + shadows[i].drop,
-            draw_w + sp, draw_h + sp, 18 + sp / 2, 0x00000000, shadows[i].alpha
-        );
-    }
+    /* Fast, clean 2-pass soft drop shadow */
+    draw_rounded_rect_alpha(draw_x - 6, draw_y - 2 + 8, draw_w + 12, draw_h + 10, 22, 0x00000000, 24);
+    draw_rounded_rect_alpha(draw_x - 2, draw_y + 3,     draw_w + 4,  draw_h + 4,  19, 0x00000000, 42);
 
     /* Основная панель -- светлая, как System Settings в Big Sur (в
      * отличие от тёмных Terminal/Calculator -- специально разный вид,
@@ -326,6 +319,6 @@ void render_settings_app_window(
 
     draw_rect_buf(win_x + 24, thumbs_y + thumb_h + 30, win_w - 48, 1, 0x00E0E0E3);
 
-    draw_string("IgorOS Nord", win_x + 24, thumbs_y + thumb_h + 48, 0x001D1D1F, buf, (uint32_t)scr_w);
-    draw_string("Built on the IgorOS 64-bit kernel", win_x + 24, thumbs_y + thumb_h + 72, 0x006E6E73, buf, (uint32_t)scr_w);
+    draw_string("ByteOS Nord", win_x + 24, thumbs_y + thumb_h + 48, 0x001D1D1F, buf, (uint32_t)scr_w);
+    draw_string("Built on the ByteOS 64-bit kernel", win_x + 24, thumbs_y + thumb_h + 72, 0x006E6E73, buf, (uint32_t)scr_w);
 }

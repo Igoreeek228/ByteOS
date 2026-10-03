@@ -1,0 +1,29 @@
+name: Build ByteOS ISO
+
+on:
+  push:
+    branches: [ Main, master, '**' ]
+  pull_request:
+    branches: [ Main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc nasm xorriso mtools parted dosfstools
+
+      - name: Compile ByteOS Kernel and ISO
+        run: |
+          make iso
+
+      - name: Upload bootable ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ByteOS-iso
+          path: build/byteOS.iso

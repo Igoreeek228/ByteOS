@@ -18,6 +18,8 @@ static inline uint32_t inl(uint16_t port) {
 #define GCTL     0x08
 #define STATESTS 0x0E
 
+#include "pmm.h"
+
 static uint64_t hda_mmio_base = 0;
 
 static uint32_t pci_read_config(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
@@ -28,15 +30,18 @@ static uint32_t pci_read_config(uint8_t bus, uint8_t slot, uint8_t func, uint8_t
 }
 
 static inline void hda_write32(uint32_t reg, uint32_t value) {
-    *(volatile uint32_t*)(unsigned long)(hda_mmio_base + reg) = value;
+    uint64_t vaddr = (uint64_t)PHYS_TO_VIRT(hda_mmio_base) + reg;
+    *(volatile uint32_t*)(unsigned long)vaddr = value;
 }
 
 static inline uint32_t hda_read32(uint32_t reg) {
-    return *(volatile uint32_t*)(unsigned long)(hda_mmio_base + reg);
+    uint64_t vaddr = (uint64_t)PHYS_TO_VIRT(hda_mmio_base) + reg;
+    return *(volatile uint32_t*)(unsigned long)vaddr;
 }
 
 static inline uint16_t hda_read16(uint32_t reg) {
-    return *(volatile uint16_t*)(unsigned long)(hda_mmio_base + reg);
+    uint64_t vaddr = (uint64_t)PHYS_TO_VIRT(hda_mmio_base) + reg;
+    return *(volatile uint16_t*)(unsigned long)vaddr;
 }
 
 bool hda_init(void) {
